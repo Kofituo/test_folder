@@ -1,0 +1,57 @@
+namespace "petstore" @path("/v1")
+
+"The Order service is the primary interface for ordering new pets."
+interface Order @service @path("/orders") {
+  "Query the current inventory of pets."
+  inventory(): Inventory @GET
+  "Order a new pet. (unary operation)"
+  order[order: OrderRequest @n(1)]: Order @POST
+  "Check the status of your order."
+  orderStatus(id: UUID @n(1)): Order @GET @path("/{id}")
+}
+
+"An OrderRequest contains the adopter ID and the ID of the pet being purchased."
+type OrderRequest {
+  "An adopter's user id"
+  adopter: u32 @n(1)
+  "A pet's pet id"
+  pet: u32 @n(2)
+}
+
+type Order {
+  "The order ID."
+  id: UUID @n(1)
+  "An adopter's user id."
+  adopter: u32 @n(2)
+  "A pet's pet id."
+  pet: u32 @n(3)
+  "The date the order was placed."
+  date: datetime @n(4)
+  "The order status."
+  status: OrderStatus @n(5)
+  "Whether or not the order is considered complete, regardless of status."
+  complete: bool @n(6)
+}
+
+"A UUID v4 string"
+alias UUID = string
+
+"The OrderStatus enum represents all statuses an order can be in."
+enum OrderStatus {
+  "The order has been placed."
+  placed = 0
+  "The order has been shipped."
+  shipped = 1
+  "The order has been canceled."
+  canceled = 2
+}
+
+"The Inventory structure contains summary information of the Pet Store's inventory."
+type Inventory {
+  "Total number of pets sold."
+  sold: u32 @n(1)
+  "Total number of new pets."
+  new: u32 @n(2)
+  "Total number of available pets."
+  available: u32 @n(3)
+}

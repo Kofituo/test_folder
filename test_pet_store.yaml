@@ -1,0 +1,147 @@
+openapi: 3.0.3
+info:
+  title: app
+  version: version
+paths:
+  /v1/orders/orders:
+    get:
+      operationId: inventory
+      summary: Query the current inventory of pets.
+      description: Query the current inventory of pets.
+      responses:
+        default:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Inventory"
+      tags:
+        - Order
+    post:
+      operationId: order
+      summary: Order a new pet. (unary operation)
+      description: Order a new pet. (unary operation)
+      responses:
+        default:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+      tags:
+        - Order
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderRequest"
+        required: true
+  "/v1/orders/orders/{id}":
+    get:
+      operationId: orderStatus
+      summary: Check the status of your order.
+      description: Check the status of your order.
+      responses:
+        default:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+      tags:
+        - Order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+components:
+  schemas:
+    UUID:
+      type: string
+    OrderRequest:
+      description: An OrderRequest contains the adopter ID and the ID of the pet being
+        purchased.
+      type: object
+      properties:
+        adopter:
+          description: An adopter's user id
+          type: integer
+          format: int64
+          maximum: 4294967295
+        pet:
+          description: A pet's pet id
+          type: integer
+          format: int64
+          maximum: 4294967295
+      required:
+        - adopter
+        - pet
+    Order:
+      type: object
+      properties:
+        id:
+          description: The order ID.
+          type: string
+        adopter:
+          description: An adopter's user id.
+          type: integer
+          format: int64
+          maximum: 4294967295
+        pet:
+          description: A pet's pet id.
+          type: integer
+          format: int64
+          maximum: 4294967295
+        date:
+          description: The date the order was placed.
+          type: string
+          format: date-time
+        status:
+          description: The order status.
+          $ref: "#/components/schemas/OrderStatus"
+        complete:
+          description: Whether or not the order is considered complete, regardless of
+            status.
+      required:
+        - id
+        - adopter
+        - pet
+        - date
+        - status
+        - complete
+    Inventory:
+      description: The Inventory structure contains summary information of the Pet
+        Store's inventory.
+      type: object
+      properties:
+        sold:
+          description: Total number of pets sold.
+          type: integer
+          format: int64
+          maximum: 4294967295
+        new:
+          description: Total number of new pets.
+          type: integer
+          format: int64
+          maximum: 4294967295
+        available:
+          description: Total number of available pets.
+          type: integer
+          format: int64
+          maximum: 4294967295
+      required:
+        - sold
+        - new
+        - available
+    OrderStatus:
+      type: string
+      description: The OrderStatus enum represents all statuses an order can be in.
+      enum:
+        - placed
+        - shipped
+        - canceled
+tags:
+  - name: Order
+    description: The Order service is the primary interface for ordering new pets.
